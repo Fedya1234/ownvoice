@@ -25,7 +25,19 @@ function newSession() {
 function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } }
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { /* приватний режим */ } }
 
-let S = load() || newSession();
+// Постійний анонімний номер браузера: повторні відправки перезаписують рядок цієї людини в таблиці.
+// Для сесій до v0.2.1 номером людини стає id старої сесії — так вона продовжує свій рядок.
+function personId(prev) {
+  try {
+    let id = localStorage.getItem('ownvoice.person');
+    if (!id) { id = (prev && prev.id) || crypto.randomUUID(); localStorage.setItem('ownvoice.person', id); }
+    return id;
+  } catch { return null; }
+}
+const loaded = load();
+const PERSON = personId(loaded);
+
+let S = loaded || newSession();
 // Згода стала типово увімкненою (v0.2): старі сесії переводимо на новий дефолт.
 if ((S.schema || 1) < 3) { S.profile.consent = true; S.schema = 3; }
 S.device = deviceInfo();
@@ -405,7 +417,7 @@ $('#rateFinal').onchange = () => { S.ratings.final = Number($('#rateFinal').valu
 function payload() {
   saveProfile();
   const { lastCurve, sentAt, ...rest } = S;
-  return { ...rest, uiLang: lang, finishedAt: new Date().toISOString() };
+  return { ...rest, person: PERSON, uiLang: lang, finishedAt: new Date().toISOString() };
 }
 function renderResult() {
   const p = payload();
