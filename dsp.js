@@ -4,15 +4,15 @@ import { pitchShiftArray } from './pitch-core.js';
 // + опційно кісткова гілка → зсув тону → три фільтри. Дефолти — з досліджень,
 // обґрунтування в research/METHOD.md.
 export const PARAMS = {
-  lowGain:  { label: 'Низи (кістка + оклюзія)', min: -6,  max: 15,   step: 0.5, def: 6,    unit: 'дБ' },
-  lowFreq:  { label: 'Межа низів',              min: 100, max: 800,  step: 10,  def: 300,  unit: 'Гц' },
-  bandGain: { label: 'Смуга кістки',            min: -6,  max: 12,   step: 0.5, def: 3,    unit: 'дБ' },
-  bandFreq: { label: 'Центр смуги',             min: 300, max: 3000, step: 10,  def: 1000, unit: 'Гц' },
-  bandQ:    { label: 'Ширина смуги (Q)',        min: 0.3, max: 3,    step: 0.1, def: 0.9,  unit: '' },
-  highGain: { label: 'Верхи',                   min: -24, max: 6,    step: 0.5, def: -6,   unit: 'дБ' },
-  highFreq: { label: 'Межа верхів',             min: 1000, max: 8000, step: 50, def: 3000, unit: 'Гц' },
-  pitch:    { label: 'Висота тону',             min: -3,  max: 1.5,  step: 0.1, def: -0.3, unit: 'пт' },
-  boneMix:  { label: 'Кістковий мікрофон',      min: -40, max: 6,    step: 1,   def: -40,  unit: 'дБ' },
+  lowGain:  { min: -6,  max: 15,   step: 0.5, def: 6,    unit: 'dB' },
+  lowFreq:  { min: 100, max: 800,  step: 10,  def: 300,  unit: 'Hz' },
+  bandGain: { min: -6,  max: 12,   step: 0.5, def: 3,    unit: 'dB' },
+  bandFreq: { min: 300, max: 3000, step: 10,  def: 1000, unit: 'Hz' },
+  bandQ:    { min: 0.3, max: 3,    step: 0.1, def: 0.9,  unit: '' },
+  highGain: { min: -24, max: 6,    step: 0.5, def: -6,   unit: 'dB' },
+  highFreq: { min: 1000, max: 8000, step: 50, def: 3000, unit: 'Hz' },
+  pitch:    { min: -3,  max: 1.5,  step: 0.1, def: -0.3, unit: 'st' },
+  boneMix:  { min: -40, max: 6,    step: 1,   def: -40,  unit: 'dB' },
 };
 
 export const BONE_OFF = -40;

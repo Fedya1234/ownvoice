@@ -1,75 +1,78 @@
 <!doctype html>
-<html lang="uk">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Свій голос</title>
+<title>Own Voice</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <h1>Свій голос</h1>
-  <p class="muted">Налаштуй запис так, щоб він звучав як голос у твоїй голові. Потрібні навушники.</p>
+  <div class="top">
+    <h1 data-i18n="title">Own Voice</h1>
+    <label class="lang"><span data-i18n="lang">Language</span> <select id="langSel"></select></label>
+  </div>
+  <p class="muted" data-i18n="tagline"></p>
   <nav id="nav">
-    <button data-tab="profile" class="on">1. Про тебе</button>
-    <button data-tab="record">2. Запис</button>
-    <button data-tab="match">3. Підбір</button>
-    <button data-tab="sliders">4. Повзунки</button>
-    <button data-tab="result">5. Результат</button>
-    <button data-tab="live">Живий режим</button>
-    <button data-tab="dual">Два мікрофони</button>
+    <button data-tab="profile" class="on" data-i18n="nav.profile"></button>
+    <button data-tab="record" data-i18n="nav.record"></button>
+    <button data-tab="match" data-i18n="nav.match"></button>
+    <button data-tab="sliders" data-i18n="nav.sliders"></button>
+    <button data-tab="result" data-i18n="nav.result"></button>
+    <button data-tab="live" data-i18n="nav.live"></button>
+    <button data-tab="dual" data-i18n="nav.dual"></button>
   </nav>
 </header>
 
 <main>
 <section id="profile" class="tab on">
-  <h2>Про тебе</h2>
-  <p class="muted">Анонімно. Потрібно, щоб шукати закономірності між людьми. Аудіо нікуди не надсилається.</p>
+  <h2 data-i18n="profile.h"></h2>
+  <p class="muted" data-i18n="profile.note"></p>
   <div class="grid">
-    <label>Стать <select id="pSex"><option value="">—</option><option value="f">жіноча</option><option value="m">чоловіча</option><option value="x">інше</option></select></label>
-    <label>Вік <input id="pAge" type="number" min="8" max="100"></label>
-    <label>Рідна мова <input id="pLang" placeholder="uk"></label>
-    <label>Навушники <select id="pPhones"><option value="">—</option><option value="over">накладні/повнорозмірні</option><option value="in">вкладиші/TWS</option><option value="bone">кісткові</option><option value="speaker">без навушників (динамік)</option></select></label>
-    <label>Співаєш / голосова практика <select id="pSing"><option value="">—</option><option value="no">ні</option><option value="some">трохи</option><option value="pro">професійно</option></select></label>
-    <label>Наскільки чужим здається твій запис (1–10) <input id="pStrange" type="range" min="1" max="10" value="5"><span id="pStrangeV">5</span></label>
+    <label><span data-i18n="profile.sex"></span> <select id="pSex"><option value="">—</option><option value="f" data-i18n="sex.f"></option><option value="m" data-i18n="sex.m"></option><option value="x" data-i18n="sex.x"></option></select></label>
+    <label><span data-i18n="profile.age"></span> <input id="pAge" type="number" min="8" max="100"></label>
+    <label><span data-i18n="profile.lang"></span> <input id="pLang" placeholder="en / uk / ru"></label>
+    <label><span data-i18n="profile.phones"></span> <select id="pPhones"><option value="">—</option><option value="over" data-i18n="phones.over"></option><option value="in" data-i18n="phones.in"></option><option value="bone" data-i18n="phones.bone"></option><option value="speaker" data-i18n="phones.speaker"></option></select></label>
+    <label><span data-i18n="profile.sing"></span> <select id="pSing"><option value="">—</option><option value="no" data-i18n="sing.no"></option><option value="some" data-i18n="sing.some"></option><option value="pro" data-i18n="sing.pro"></option></select></label>
+    <label><span data-i18n="profile.strange"></span> <input id="pStrange" type="range" min="1" max="10" value="5"><span id="pStrangeV">5</span></label>
   </div>
-  <label class="check"><input id="pConsent" type="checkbox"> Погоджуюсь, що мої налаштування (без аудіо) можна використати в дослідженні</label>
-  <button class="primary" data-go="record">Далі</button>
+  <label class="check"><input id="pConsent" type="checkbox"> <span data-i18n="profile.consent"></span></label>
+  <button class="primary" data-go="record" data-i18n="next"></button>
 </section>
 
 <section id="record" class="tab">
-  <h2>Запис</h2>
+  <h2 data-i18n="record.h"></h2>
   <ol class="muted small">
-    <li>Тиша навколо, телефон/мікрофон ~20 см від рота.</li>
-    <li>Скажи вголос звичайним голосом: <b id="phrase">«Привіт, це мій голос. Раз, два, три, чотири, п'ять. Мама мила раму.»</b></li>
-    <li>6–8 секунд достатньо.</li>
+    <li data-i18n="record.s1"></li>
+    <li><span data-i18n="record.s2"></span> <b data-i18n="phrase"></b></li>
+    <li data-i18n="record.s3"></li>
   </ol>
   <div class="row">
-    <label>Режим <select id="recMode">
-      <option value="single">один мікрофон</option>
-      <option value="two">два мікрофони (два пристрої)</option>
-      <option value="stereo">два мікрофони (стерео-вхід: L — повітря, R — кістка)</option>
+    <label><span data-i18n="record.mode"></span> <select id="recMode">
+      <option value="single" data-i18n="mode.single"></option>
+      <option value="two" data-i18n="mode.two"></option>
+      <option value="stereo" data-i18n="mode.stereo"></option>
     </select></label>
-    <button id="btnDevices">Показати мікрофони</button>
+    <button id="btnDevices" data-i18n="record.devices"></button>
   </div>
   <div class="row" id="devRow" hidden>
-    <label>Повітряний <select id="micAir"></select></label>
-    <label id="boneLbl">Кістковий <select id="micBone"></select></label>
+    <label><span data-i18n="record.air"></span> <select id="micAir"></select></label>
+    <label id="boneLbl"><span data-i18n="record.bone"></span> <select id="micBone"></select></label>
   </div>
   <div class="row">
-    <button id="btnRec" class="primary">● Записати</button>
-    <button id="btnPlayRaw" disabled>▶ Послухати</button>
-    <button id="btnDemo" class="ghost">Демо-голос (без мікрофона)</button>
+    <button id="btnRec" class="primary"></button>
+    <button id="btnPlayRaw" disabled data-i18n="record.play"></button>
+    <button id="btnDemo" class="ghost" data-i18n="record.demo"></button>
   </div>
   <div class="meter"><div id="meterBar"></div></div>
   <p id="recInfo" class="muted"></p>
-  <button class="primary" data-go="match" id="goMatch" disabled>До підбору</button>
+  <button class="primary" data-go="match" id="goMatch" disabled data-i18n="record.go"></button>
 </section>
 
 <section id="match" class="tab">
-  <h2>Підбір</h2>
-  <p class="muted">Перед кожною парою скажи фразу вголос ще раз — щоб свіжо памʼятати, як ти себе чуєш. Потім послухай A і B і вибери ближчий до голосу в голові. Гучність вирівняна.</p>
-  <div id="matchIdle"><button id="btnMatchStart" class="primary">Почати (≈25 порівнянь, 5 хв)</button></div>
+  <h2 data-i18n="match.h"></h2>
+  <p class="muted" data-i18n="match.note"></p>
+  <div id="matchIdle"><button id="btnMatchStart" class="primary"></button></div>
   <div id="matchRun" hidden>
     <div class="progress"><div id="matchBar"></div></div>
     <p id="matchStage" class="muted small"></p>
@@ -78,64 +81,64 @@
       <button id="playB" class="big">▶ B</button>
     </div>
     <div class="ab">
-      <button id="pickA" class="primary">A ближче</button>
-      <button id="pickSame">Однаково</button>
-      <button id="pickB" class="primary">B ближче</button>
+      <button id="pickA" class="primary" data-i18n="match.pickA"></button>
+      <button id="pickSame" data-i18n="match.same"></button>
+      <button id="pickB" class="primary" data-i18n="match.pickB"></button>
     </div>
   </div>
   <div id="matchDone" hidden>
-    <p>Готово. Оціни, наскільки результат схожий на твій голос зсередини:</p>
-    <label>Схожість (1–10) <input id="rateAuto" type="range" min="1" max="10" value="5"><span id="rateAutoV">5</span></label>
-    <button id="playAuto">▶ Результат</button>
-    <button class="primary" data-go="sliders">Підкрутити повзунками</button>
+    <p data-i18n="match.done"></p>
+    <label><span data-i18n="match.similarity"></span> <input id="rateAuto" type="range" min="1" max="10" value="5"><span id="rateAutoV">5</span></label>
+    <button id="playAuto" data-i18n="match.playResult"></button>
+    <button class="primary" data-go="sliders" data-i18n="match.toSliders"></button>
   </div>
 </section>
 
 <section id="sliders" class="tab">
-  <h2>Повзунки</h2>
-  <p class="muted">Звук оновлюється, коли відпускаєш повзунок. «Петля» програє запис по колу.</p>
+  <h2 data-i18n="sliders.h"></h2>
+  <p class="muted" data-i18n="sliders.note"></p>
   <div class="row">
-    <button id="btnLoop" class="primary">▶ Петля</button>
-    <button id="btnBypass">Порівняти з сирим</button>
-    <button id="btnReset">Дефолт з досліджень</button>
+    <button id="btnLoop" class="primary"></button>
+    <button id="btnBypass"></button>
+    <button id="btnReset" data-i18n="sliders.reset"></button>
   </div>
   <div id="sliderBox"></div>
-  <label>Фінальна схожість (1–10) <input id="rateFinal" type="range" min="1" max="10" value="5"><span id="rateFinalV">5</span></label>
-  <button class="primary" data-go="result">Далі</button>
+  <label><span data-i18n="sliders.final"></span> <input id="rateFinal" type="range" min="1" max="10" value="5"><span id="rateFinalV">5</span></label>
+  <button class="primary" data-go="result" data-i18n="next"></button>
 </section>
 
 <section id="result" class="tab">
-  <h2>Результат</h2>
+  <h2 data-i18n="result.h"></h2>
+  <p id="sendInfo"></p>
   <pre id="resultBox"></pre>
   <div class="row">
-    <button id="btnSend" class="primary">Надіслати в дослідження</button>
-    <button id="btnJson">Завантажити JSON</button>
-    <button id="btnWav">Завантажити мій «внутрішній» голос (WAV)</button>
-    <button id="btnNew" class="ghost">Нова сесія</button>
+    <button id="btnJson" class="primary" data-i18n="result.json"></button>
+    <button id="btnWav" data-i18n="result.wav"></button>
+    <button id="btnSend" data-i18n="result.send"></button>
+    <button id="btnNew" class="ghost" data-i18n="result.new"></button>
   </div>
-  <p id="sendInfo" class="muted"></p>
 </section>
 
 <section id="live" class="tab">
-  <h2>Живий режим</h2>
-  <p class="muted">Прототип майбутньої утиліти: мікрофон → твій фільтр → навушники, у реальному часі. Лише з навушниками, інакше буде свист. Можна записати оброблений звук.</p>
+  <h2 data-i18n="live.h"></h2>
+  <p class="muted" data-i18n="live.note"></p>
   <div class="row">
-    <button id="btnLive" class="primary">Увімкнути</button>
-    <button id="btnLiveBypass" disabled>Без фільтра</button>
-    <button id="btnLiveRec" disabled>● Записати оброблене</button>
+    <button id="btnLive" class="primary"></button>
+    <button id="btnLiveBypass" disabled></button>
+    <button id="btnLiveRec" disabled></button>
   </div>
   <p id="liveInfo" class="muted"></p>
 </section>
 
 <section id="dual" class="tab">
-  <h2>Два мікрофони</h2>
-  <p class="muted">Звичайний мікрофон перед ротом + контактний (пʼєзо) мікрофон, притиснутий до кістки (вилиця, за вухом, лоб). Запиши в режимі «два мікрофони» на вкладці «Запис». Тут — спектр кістка/повітря; з ним кістковий повзунок працює і для звичайних записів.</p>
+  <h2 data-i18n="dual.h"></h2>
+  <p class="muted" data-i18n="dual.note"></p>
   <canvas id="curveCanvas"></canvas>
-  <p class="small"><span class="sw air"></span>повітря <span class="sw bone"></span>кістка <span class="sw ratio"></span>кістка − повітря</p>
+  <p class="small"><span class="sw air"></span><span data-i18n="dual.air"></span> <span class="sw bone"></span><span data-i18n="dual.bone"></span> <span class="sw ratio"></span><span data-i18n="dual.ratio"></span></p>
   <p id="dualInfo" class="muted"></p>
   <div class="row">
-    <button id="btnCurveSave" disabled>Зберегти профіль кістки</button>
-    <button id="btnCurveClear" class="ghost">Прибрати профіль</button>
+    <button id="btnCurveSave" disabled data-i18n="dual.save"></button>
+    <button id="btnCurveClear" class="ghost" data-i18n="dual.clear"></button>
   </div>
 </section>
 </main>
