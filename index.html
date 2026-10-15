@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Свій голос</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Свій голос</h1>
+  <p class="muted">Налаштуй запис так, щоб він звучав як голос у твоїй голові. Потрібні навушники.</p>
+  <nav id="nav">
+    <button data-tab="profile" class="on">1. Про тебе</button>
+    <button data-tab="record">2. Запис</button>
+    <button data-tab="match">3. Підбір</button>
+    <button data-tab="sliders">4. Повзунки</button>
+    <button data-tab="result">5. Результат</button>
+    <button data-tab="live">Живий режим</button>
+    <button data-tab="dual">Два мікрофони</button>
+  </nav>
+</header>
+
+<main>
+<section id="profile" class="tab on">
+  <h2>Про тебе</h2>
+  <p class="muted">Анонімно. Потрібно, щоб шукати закономірності між людьми. Аудіо нікуди не надсилається.</p>
+  <div class="grid">
+    <label>Стать <select id="pSex"><option value="">—</option><option value="f">жіноча</option><option value="m">чоловіча</option><option value="x">інше</option></select></label>
+    <label>Вік <input id="pAge" type="number" min="8" max="100"></label>
+    <label>Рідна мова <input id="pLang" placeholder="uk"></label>
+    <label>Навушники <select id="pPhones"><option value="">—</option><option value="over">накладні/повнорозмірні</option><option value="in">вкладиші/TWS</option><option value="bone">кісткові</option><option value="speaker">без навушників (динамік)</option></select></label>
+    <label>Співаєш / голосова практика <select id="pSing"><option value="">—</option><option value="no">ні</option><option value="some">трохи</option><option value="pro">професійно</option></select></label>
+    <label>Наскільки чужим здається твій запис (1–10) <input id="pStrange" type="range" min="1" max="10" value="5"><span id="pStrangeV">5</span></label>
+  </div>
+  <label class="check"><input id="pConsent" type="checkbox"> Погоджуюсь, що мої налаштування (без аудіо) можна використати в дослідженні</label>
+  <button class="primary" data-go="record">Далі</button>
+</section>
+
+<section id="record" class="tab">
+  <h2>Запис</h2>
+  <ol class="muted small">
+    <li>Тиша навколо, телефон/мікрофон ~20 см від рота.</li>
+    <li>Скажи вголос звичайним голосом: <b id="phrase">«Привіт, це мій голос. Раз, два, три, чотири, п'ять. Мама мила раму.»</b></li>
+    <li>6–8 секунд достатньо.</li>
+  </ol>
+  <div class="row">
+    <label>Режим <select id="recMode">
+      <option value="single">один мікрофон</option>
+      <option value="two">два мікрофони (два пристрої)</option>
+      <option value="stereo">два мікрофони (стерео-вхід: L — повітря, R — кістка)</option>
+    </select></label>
+    <button id="btnDevices">Показати мікрофони</button>
+  </div>
+  <div class="row" id="devRow" hidden>
+    <label>Повітряний <select id="micAir"></select></label>
+    <label id="boneLbl">Кістковий <select id="micBone"></select></label>
+  </div>
+  <div class="row">
+    <button id="btnRec" class="primary">● Записати</button>
+    <button id="btnPlayRaw" disabled>▶ Послухати</button>
+    <button id="btnDemo" class="ghost">Демо-голос (без мікрофона)</button>
+  </div>
+  <div class="meter"><div id="meterBar"></div></div>
+  <p id="recInfo" class="muted"></p>
+  <button class="primary" data-go="match" id="goMatch" disabled>До підбору</button>
+</section>
+
+<section id="match" class="tab">
+  <h2>Підбір</h2>
+  <p class="muted">Перед кожною парою скажи фразу вголос ще раз — щоб свіжо памʼятати, як ти себе чуєш. Потім послухай A і B і вибери ближчий до голосу в голові. Гучність вирівняна.</p>
+  <div id="matchIdle"><button id="btnMatchStart" class="primary">Почати (≈25 порівнянь, 5 хв)</button></div>
+  <div id="matchRun" hidden>
+    <div class="progress"><div id="matchBar"></div></div>
+    <p id="matchStage" class="muted small"></p>
+    <div class="ab">
+      <button id="playA" class="big">▶ A</button>
+      <button id="playB" class="big">▶ B</button>
+    </div>
+    <div class="ab">
+      <button id="pickA" class="primary">A ближче</button>
+      <button id="pickSame">Однаково</button>
+      <button id="pickB" class="primary">B ближче</button>
+    </div>
+  </div>
+  <div id="matchDone" hidden>
+    <p>Готово. Оціни, наскільки результат схожий на твій голос зсередини:</p>
+    <label>Схожість (1–10) <input id="rateAuto" type="range" min="1" max="10" value="5"><span id="rateAutoV">5</span></label>
+    <button id="playAuto">▶ Результат</button>
+    <button class="primary" data-go="sliders">Підкрутити повзунками</button>
+  </div>
+</section>
+
+<section id="sliders" class="tab">
+  <h2>Повзунки</h2>
+  <p class="muted">Звук оновлюється, коли відпускаєш повзунок. «Петля» програє запис по колу.</p>
+  <div class="row">
+    <button id="btnLoop" class="primary">▶ Петля</button>
+    <button id="btnBypass">Порівняти з сирим</button>
+    <button id="btnReset">Дефолт з досліджень</button>
+  </div>
+  <div id="sliderBox"></div>
+  <label>Фінальна схожість (1–10) <input id="rateFinal" type="range" min="1" max="10" value="5"><span id="rateFinalV">5</span></label>
+  <button class="primary" data-go="result">Далі</button>
+</section>
+
+<section id="result" class="tab">
+  <h2>Результат</h2>
+  <pre id="resultBox"></pre>
+  <div class="row">
+    <button id="btnSend" class="primary">Надіслати в дослідження</button>
+    <button id="btnJson">Завантажити JSON</button>
+    <button id="btnWav">Завантажити мій «внутрішній» голос (WAV)</button>
+    <button id="btnNew" class="ghost">Нова сесія</button>
+  </div>
+  <p id="sendInfo" class="muted"></p>
+</section>
+
+<section id="live" class="tab">
+  <h2>Живий режим</h2>
+  <p class="muted">Прототип майбутньої утиліти: мікрофон → твій фільтр → навушники, у реальному часі. Лише з навушниками, інакше буде свист. Можна записати оброблений звук.</p>
+  <div class="row">
+    <button id="btnLive" class="primary">Увімкнути</button>
+    <button id="btnLiveBypass" disabled>Без фільтра</button>
+    <button id="btnLiveRec" disabled>● Записати оброблене</button>
+  </div>
+  <p id="liveInfo" class="muted"></p>
+</section>
+
+<section id="dual" class="tab">
+  <h2>Два мікрофони</h2>
+  <p class="muted">Звичайний мікрофон перед ротом + контактний (пʼєзо) мікрофон, притиснутий до кістки (вилиця, за вухом, лоб). Запиши в режимі «два мікрофони» на вкладці «Запис». Тут — спектр кістка/повітря; з ним кістковий повзунок працює і для звичайних записів.</p>
+  <canvas id="curveCanvas"></canvas>
+  <p class="small"><span class="sw air"></span>повітря <span class="sw bone"></span>кістка <span class="sw ratio"></span>кістка − повітря</p>
+  <p id="dualInfo" class="muted"></p>
+  <div class="row">
+    <button id="btnCurveSave" disabled>Зберегти профіль кістки</button>
+    <button id="btnCurveClear" class="ghost">Прибрати профіль</button>
+  </div>
+</section>
+</main>
+
+<footer class="muted small">v<span id="ver"></span> · <span id="sid"></span></footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
