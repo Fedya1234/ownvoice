@@ -17,8 +17,8 @@ function deviceInfo() {
 
 function newSession() {
   return {
-    schema: 2, app: CONFIG.version, id: crypto.randomUUID(), created: new Date().toISOString(),
-    profile: {}, recording: null, params: { ...DEFAULTS }, auto: null, trials: [],
+    schema: 3, app: CONFIG.version, id: crypto.randomUUID(), created: new Date().toISOString(),
+    profile: { consent: true }, recording: null, params: { ...DEFAULTS }, auto: null, trials: [],
     validation: [], ratings: {}, boneCurve: null, device: deviceInfo(), sentAt: null,
   };
 }
@@ -26,6 +26,8 @@ function load() { try { return JSON.parse(localStorage.getItem(KEY)); } catch { 
 function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch { /* приватний режим */ } }
 
 let S = load() || newSession();
+// Згода стала типово увімкненою (v0.2): старі сесії переводимо на новий дефолт.
+if ((S.schema || 1) < 3) { S.profile.consent = true; S.schema = 3; }
 S.device = deviceInfo();
 let rec = null;             // { air, bone|null, sr } — лише в памʼяті
 let ctx = null;
@@ -66,7 +68,7 @@ function refreshTexts() {
   $('#btnLiveBypass').textContent = t(live && live.bypass ? 'live.unbypass' : 'live.bypass');
   $('#btnLiveRec').textContent = t(liveRec ? 'live.recStop' : 'live.rec');
   if (recInfoArgs) showRecInfo();
-  if (M && !$('#matchRun').hidden) showStage();
+  if (M && trial && !$('#matchRun').hidden) { showStage(); updateHint(); }
   buildSliders();
   if ($('#result').classList.contains('on')) renderResult();
   if ($('#dual').classList.contains('on')) renderDual();
@@ -110,23 +112,27 @@ $('#pConsent').onchange = saveProfile;
 const NO_DSP = { echoCancellation: false, noiseSuppression: false, autoGainControl: false };
 let recState = null;
 
-$('#recMode').onchange = () => {
-  const m = $('#recMode').value;
-  $('#boneLbl').hidden = m !== 'two';
-  if (m !== 'single') listDevices();
+const recMode = () => ($('#useTwo').checked ? $('#recMode').value : 'single');
+$('#useTwo').onchange = () => {
+  $('#twoRow').hidden = !$('#useTwo').checked;
+  $('#boneLbl').hidden = $('#recMode').value !== 'two';
+  if ($('#useTwo').checked) listDevices();
 };
+$('#recMode').onchange = () => { $('#boneLbl').hidden = $('#recMode').value !== 'two'; };
 
 async function listDevices() {
   try {
     const s = await navigator.mediaDevices.getUserMedia({ audio: true });
     s.getTracks().forEach((x) => x.stop());
     const devs = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'audioinput');
-    for (const sel of ['#micAir', '#micBone']) {
-      $(sel).innerHTML = devs.map((d, i) => `<option value="${d.deviceId}">${d.label || t('record.mic') + ' ' + (i + 1)}</option>`).join('');
+    const opts = devs.map((d, i) => `<option value="${d.deviceId}">${d.label || t('record.mic') + ' ' + (i + 1)}</option>`).join('');
+    const keep = $('#micAir').value;
+    $('#micAir').innerHTML = `<option value="">${t('record.defaultMic')}</option>` + opts;
+    $('#micAir').value = keep;
+    if (!$('#micBone').options.length) {
+      $('#micBone').innerHTML = opts;
+      if (devs.length > 1) $('#micBone').selectedIndex = 1;
     }
-    if (devs.length > 1) $('#micBone').selectedIndex = 1;
-    $('#devRow').hidden = false;
-    $('#boneLbl').hidden = $('#recMode').value !== 'two';
   } catch (e) {
     $('#recInfo').textContent = t('record.noAccess') + e.message;
   }
@@ -135,7 +141,7 @@ $('#btnDevices').onclick = listDevices;
 
 async function startRec() {
   const c = ac();
-  const mode = $('#recMode').value;
+  const mode = recMode();
   await c.audioWorklet.addModule('recorder-worklet.js');
   const airId = $('#micAir').value;
   const streams = [];
@@ -247,32 +253,82 @@ $('#btnMatchStart').onclick = () => {
   if (!rec) { show('record'); return; }
   M = new Matcher(PRESETS, S.params.boneMix);
   S.trials = [];
+  $('#history').innerHTML = ''; delete $('#history').dataset.phase;
   $('#matchIdle').hidden = true; $('#matchDone').hidden = true; $('#matchRun').hidden = false;
   nextTrial();
 };
 
 function showStage() {
   const tr = trial.t;
-  $('#matchStage').textContent = t('phase.' + tr.phase) + (tr.param ? ` · ${t('p.' + tr.param)}` : '') + ` · ${M.done + 1}/${M.total}`;
+  $('#pairNo').textContent = t('match.pairOf', { n: M.done + 1, total: M.total });
+  $('#matchStage').textContent = t('phase.' + tr.phase) + (tr.param ? ` · ${t('p.' + tr.param)}` : '');
 }
 
-async function nextTrial() {
+// Підказка веде людину по кроках пари і підсвічує кнопку, яку треба натиснути.
+function updateHint() {
+  const hint = $('#matchHint');
+  ['#playA', '#playB', '#pickA', '#pickB', '#pickSame'].forEach((s) => $(s).classList.remove('pulse'));
+  hint.classList.remove('ok');
+  if (!trial || !trial.bufA) { hint.textContent = t('hint.loading'); return; }
+  if (trial.justSaved && !trial.playsA && !trial.playsB) {
+    hint.textContent = t('hint.saved') + ' · ' + t('hint.startA');
+    hint.classList.add('ok');
+    $('#playA').classList.add('pulse');
+    return;
+  }
+  if (!trial.playsA && !trial.playsB) { hint.textContent = t('hint.startA'); $('#playA').classList.add('pulse'); return; }
+  if (!trial.playsB) { hint.textContent = t('hint.nowB'); $('#playB').classList.add('pulse'); return; }
+  if (!trial.playsA) { hint.textContent = t('hint.nowA'); $('#playA').classList.add('pulse'); return; }
+  hint.textContent = t('hint.choose');
+  ['#pickA', '#pickB'].forEach((s) => $(s).classList.add('pulse'));
+}
+
+async function nextTrial(justSaved = false) {
   const tr = M.current();
   $('#matchBar').style.width = (M.done / M.total * 100) + '%';
   if (!tr) return finishMatch();
   const swap = Math.random() < 0.5;
-  trial = { t: tr, swap, A: swap ? tr.b : tr.a, B: swap ? tr.a : tr.b, playsA: 0, playsB: 0, t0: Date.now() };
+  trial = { t: tr, swap, A: swap ? tr.b : tr.a, B: swap ? tr.a : tr.b, playsA: 0, playsB: 0, t0: Date.now(), justSaved };
   showStage();
-  ['#pickA', '#pickB', '#pickSame', '#playA', '#playB'].forEach((s) => $(s).disabled = true);
-  [trial.bufA, trial.bufB] = await Promise.all([renderVariant(rec, trial.A, S.boneCurve), renderVariant(rec, trial.B, S.boneCurve)]);
+  ['#pickA', '#pickB', '#pickSame', '#playA', '#playB'].forEach((s) => { $(s).disabled = true; $(s).classList.remove('heard', 'playing'); });
+  updateHint();
+  const card = $('#pairCard');
+  card.classList.remove('fresh'); void card.offsetWidth; card.classList.add('fresh');
+  const mine = trial;
+  const [a, b] = await Promise.all([renderVariant(rec, trial.A, S.boneCurve), renderVariant(rec, trial.B, S.boneCurve)]);
+  if (trial !== mine) return;
+  trial.bufA = a; trial.bufB = b;
   ['#playA', '#playB'].forEach((s) => $(s).disabled = false);
+  updateHint();
 }
 
-function enablePicks() { if (trial.playsA && trial.playsB) ['#pickA', '#pickB', '#pickSame'].forEach((s) => $(s).disabled = false); }
-$('#playA').onclick = () => { trial.playsA++; play(trial.bufA); enablePicks(); };
-$('#playB').onclick = () => { trial.playsB++; play(trial.bufB); enablePicks(); };
+function playSide(side) {
+  const btn = $('#play' + side);
+  trial['plays' + side]++;
+  ['#playA', '#playB'].forEach((s) => $(s).classList.remove('playing'));
+  btn.classList.add('playing', 'heard');
+  const src = play(trial['buf' + side]);
+  src.addEventListener('ended', () => btn.classList.remove('playing'));
+  if (trial.playsA && trial.playsB) ['#pickA', '#pickB', '#pickSame'].forEach((s) => $(s).disabled = false);
+  updateHint();
+}
+$('#playA').onclick = () => playSide('A');
+$('#playB').onclick = () => playSide('B');
+
+function addHistory(tr, p) {
+  const h = $('#history');
+  const prev = h.dataset.phase;
+  if (prev !== tr.phase) {
+    const sep = document.createElement('span'); sep.className = 'sep'; sep.textContent = t('phase.' + tr.phase).split('·')[0].trim();
+    h.appendChild(sep); h.dataset.phase = tr.phase;
+  }
+  const shown = p === 'same' ? '=' : ((p === 'a') !== trial.swap ? 'A' : 'B');
+  const chip = document.createElement('span'); chip.textContent = `${M.done} ${shown}`;
+  h.appendChild(chip);
+}
 
 function pick(which) {
+  if (!trial || !trial.bufA) return;
   stop();
   const p = which === 'same' ? 'same' : ((which === 'A') !== trial.swap ? 'a' : 'b');
   const tr = trial.t;
@@ -282,8 +338,9 @@ function pick(which) {
     pick: p, shownFirst: trial.swap ? 'b' : 'a', playsA: trial.playsA, playsB: trial.playsB, ms: Date.now() - trial.t0,
   });
   M.answer(p);
+  addHistory(tr, p);
   save();
-  nextTrial();
+  nextTrial(true);
 }
 $('#pickA').onclick = () => pick('A');
 $('#pickB').onclick = () => pick('B');
@@ -392,7 +449,7 @@ $('#btnLive').onclick = async () => {
   }
   try {
     const c = ac();
-    const mode = $('#recMode').value;
+    const mode = recMode();
     const airId = $('#micAir').value;
     const streams = [await navigator.mediaDevices.getUserMedia({ audio: { ...NO_DSP, ...(airId ? { deviceId: { exact: airId } } : {}) } })];
     if (mode === 'two') streams.push(await navigator.mediaDevices.getUserMedia({ audio: { ...NO_DSP, deviceId: { exact: $('#micBone').value } } }));

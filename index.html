@@ -36,7 +36,7 @@
     <label><span data-i18n="profile.sing"></span> <select id="pSing"><option value="">—</option><option value="no" data-i18n="sing.no"></option><option value="some" data-i18n="sing.some"></option><option value="pro" data-i18n="sing.pro"></option></select></label>
     <label><span data-i18n="profile.strange"></span> <input id="pStrange" type="range" min="1" max="10" value="5"><span id="pStrangeV">5</span></label>
   </div>
-  <label class="check"><input id="pConsent" type="checkbox"> <span data-i18n="profile.consent"></span></label>
+  <label class="check"><input id="pConsent" type="checkbox" checked> <span data-i18n="profile.consent"></span></label>
   <button class="primary" data-go="record" data-i18n="next"></button>
 </section>
 
@@ -48,17 +48,28 @@
     <li data-i18n="record.s3"></li>
   </ol>
   <div class="row">
-    <label><span data-i18n="record.mode"></span> <select id="recMode">
-      <option value="single" data-i18n="mode.single"></option>
-      <option value="two" data-i18n="mode.two"></option>
-      <option value="stereo" data-i18n="mode.stereo"></option>
-    </select></label>
+    <label class="grow"><span data-i18n="record.micSel"></span> <select id="micAir"><option value="" data-i18n="record.defaultMic"></option></select></label>
     <button id="btnDevices" data-i18n="record.devices"></button>
   </div>
-  <div class="row" id="devRow" hidden>
-    <label><span data-i18n="record.air"></span> <select id="micAir"></select></label>
-    <label id="boneLbl"><span data-i18n="record.bone"></span> <select id="micBone"></select></label>
-  </div>
+  <details id="twoMic" class="explain">
+    <summary><b data-i18n="two.title"></b><span class="muted small" data-i18n="two.short"></span></summary>
+    <div class="explain-body small">
+      <h3 data-i18n="two.h1"></h3><p data-i18n="two.p1"></p>
+      <h3 data-i18n="two.h2"></h3><p data-i18n="two.p2"></p>
+      <h3 data-i18n="two.h3"></h3><p data-i18n="two.p3"></p>
+      <h3 data-i18n="two.h4"></h3><p data-i18n="two.p4"></p><p data-i18n="two.p4b"></p>
+      <h3 data-i18n="two.h5"></h3><p data-i18n="two.p5"></p>
+      <h3 data-i18n="two.h6"></h3><p data-i18n="two.p6"></p>
+    </div>
+    <label class="check"><input type="checkbox" id="useTwo"> <span data-i18n="two.enable"></span></label>
+    <div class="row" id="twoRow" hidden>
+      <label><span data-i18n="record.mode"></span> <select id="recMode">
+        <option value="two" data-i18n="mode.two"></option>
+        <option value="stereo" data-i18n="mode.stereo"></option>
+      </select></label>
+      <label id="boneLbl"><span data-i18n="record.bone"></span> <select id="micBone"></select></label>
+    </div>
+  </details>
   <div class="row">
     <button id="btnRec" class="primary"></button>
     <button id="btnPlayRaw" disabled data-i18n="record.play"></button>
@@ -75,16 +86,21 @@
   <div id="matchIdle"><button id="btnMatchStart" class="primary"></button></div>
   <div id="matchRun" hidden>
     <div class="progress"><div id="matchBar"></div></div>
-    <p id="matchStage" class="muted small"></p>
-    <div class="ab">
-      <button id="playA" class="big">▶ A</button>
-      <button id="playB" class="big">▶ B</button>
+    <div id="pairCard" class="pair">
+      <div class="pair-head"><b id="pairNo"></b> <span id="matchStage" class="muted small"></span></div>
+      <div class="ab">
+        <button id="playA" class="big">▶ A</button>
+        <button id="playB" class="big">▶ B</button>
+      </div>
+      <div class="ab">
+        <button id="pickA" class="primary" data-i18n="match.pickA"></button>
+        <button id="pickSame" data-i18n="match.same"></button>
+        <button id="pickB" class="primary" data-i18n="match.pickB"></button>
+      </div>
+      <p id="matchHint" class="hint"></p>
     </div>
-    <div class="ab">
-      <button id="pickA" class="primary" data-i18n="match.pickA"></button>
-      <button id="pickSame" data-i18n="match.same"></button>
-      <button id="pickB" class="primary" data-i18n="match.pickB"></button>
-    </div>
+    <p class="muted small"><span data-i18n="match.history"></span></p>
+    <div id="history" class="history"></div>
   </div>
   <div id="matchDone" hidden>
     <p data-i18n="match.done"></p>

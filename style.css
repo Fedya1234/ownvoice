@@ -39,3 +39,26 @@ canvas { width: 100%; height: 220px; background: var(--bg); border-radius: 8px; 
 .sw { display: inline-block; width: 12px; height: 3px; margin: 0 4px 3px 10px; }
 .sw.air { background: var(--air); } .sw.bone { background: var(--bone); } .sw.ratio { background: var(--ratio); }
 footer { padding-bottom: 24px; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.lang { flex-direction: row; align-items: center; gap: 6px; }
+label.grow { flex: 1; min-width: 200px; }
+.explain { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin: 12px 0; background: var(--bg); }
+.explain summary { cursor: pointer; display: flex; flex-direction: column; gap: 2px; }
+.explain summary::marker { content: ''; }
+.explain summary b::before { content: '▸ '; }
+.explain[open] summary b::before { content: '▾ '; }
+.explain-body h3 { font-size: 15px; margin: 14px 0 4px; }
+.explain-body p { margin: 4px 0; }
+.pair { border: 2px solid var(--line); border-radius: 12px; padding: 12px; margin: 10px 0; }
+.pair.fresh { animation: fresh .6s ease; }
+@keyframes fresh { from { border-color: var(--accent); transform: translateY(6px); opacity: .4; } to { transform: none; opacity: 1; } }
+.pair-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.hint { margin: 8px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--bg); font-weight: 600; text-align: center; }
+.hint.ok { color: var(--ratio); }
+.pulse { box-shadow: 0 0 0 0 var(--accent); animation: pulse 1.3s infinite; border-color: var(--accent); }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); } 70% { box-shadow: 0 0 0 10px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+button.playing { background: var(--accent); color: var(--accent-fg); }
+button.heard { border-color: var(--ratio); }
+.history { display: flex; flex-wrap: wrap; gap: 4px; }
+.history span { font-size: 12px; padding: 2px 7px; border-radius: 10px; background: var(--bg); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.history span.sep { border: none; background: none; color: var(--muted); }
